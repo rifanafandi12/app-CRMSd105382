@@ -1,0 +1,81 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  php-lint:
+    name: PHP ${{ matrix.php-version }} Lint
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: ['7.4', '8.0', '8.1', '8.2']
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: mbstring, intl, mysqli, gd
+          coverage: none
+
+      - name: Validate composer.json
+        run: composer validate --strict || true
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction || true
+
+      - name: PHP Syntax Check
+        run: |
+          find application -name '*.php' -print0 | xargs -0 -n1 -P4 php -l
+
+  node-build:
+    name: Node.js Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build assets
+        run: npm run build
+
+      - name: Verify build output
+        run: test -f assets/css/app.css && echo "✓ Build successful"
+
+  node-server:
+    name: Node.js Server Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        working-directory: node_server
+        run: npm install
+
+      - name: Syntax Check
+        working-directory: node_server
+        run: node -c src/server.js

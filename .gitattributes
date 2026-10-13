@@ -1,0 +1,39 @@
+# Auto-detect text files & normalize line endings
+* text=auto
+
+# Explicitly declare text files you want to normalize
+*.php    text eol=lf
+*.html   text eol=lf
+*.css    text eol=lf
+*.js     text eol=lf
+*.json   text eol=lf
+*.md     text eol=lf
+*.sql    text eol=lf
+*.yml    text eol=lf
+*.yaml   text eol=lf
+
+# Denote binary files that should not be modified
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.gif    binary
+*.webp   binary
+*.ico    binary
+*.svg    text eol=lf
+*.pdf    binary
+*.zip    binary
+*.woff   binary
+*.woff2  binary
+*.ttf    binary
+
+# Windows files
+*.bat    text eol=crlf
+*.cmd    text eol=crlf
+
+# Linguist — exclude from language stats
+assets/css/app.css       linguist-generated=true
+assets/js/vendor/*       linguist-vendored
+node_modules/*           linguist-vendored
+vendor/*                 linguist-vendored
+*.min.js                 linguist-generated
+*.min.css                linguist-generated
